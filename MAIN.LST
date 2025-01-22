@@ -1,0 +1,693 @@
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 1
+main.asm
+
+
+
+      1	0000			     DATA SEGMENT PARA PUBLIC 'DATA'
+      2	0000  0000			 NUMAR DW 0000D
+      3	0002  00 00 00 00		 DIGITS	DB 0, 0, 0, 0
+      4	0006  00			 COUNTER Db 00H
+      5	0007  20			 SPACE DB 32D ;SPACE FOR PRINT
+      6	0008  0D 0A			 ENDL DB 13, 10	;END OF	LINE
+      7	000A  64 61 74 65 2E 74	78+	 filename db 'date.txt', 0
+      8	      74 00
+      9	0013  ????			 fileHandle dw ?
+     10	0015  53 74 61 72 74 69	6E+	 promptb db 'Starting from:$'
+     11	      67 20 66 72 6F 6D	3A+
+     12	      24
+     13	0024  49 74 65 72 61 74	69+	 prompte db 'Iterations: $'
+     14	      6F 6E 73 3A 20 24
+     15	0031  57 72 6F 6E 67 20	69+	 error_message db 'Wrong input,	try again:$'
+     16	      6E 70 75 74 2C 20	74+
+     17	      72 79 20 61 67 61	69+
+     18	      6E 3A 24
+     19	0049  20 2D 20 24		 dividing_string db ' -	$'
+     20	004D  20 3D 20 24		 dividing_string2 db ' = $'
+     21	0051  00			 FLAG db 00H ;flag for checking	the input
+     22	0052  43 68 6F 6F 73 65	20+	 MODE db 'Choose mode: 1 - Autorun, 2 -	Interaction$'
+     23	      6D 6F 64 65 3A 20	31+
+     24	      20 2D 20 41 75 74	6F+
+     25	      72 75 6E 2C 20 32	20+
+     26	      2D 20 49 6E 74 65	72+
+     27	      61 63 74 69 6F 6E	24
+     28	007C  57 72 6F 6E 67 20	6D+	 ERRMODE DB 'Wrong mode, try again:$'
+     29	      6F 64 65 2C 20 74	72+
+     30	      79 20 61 67 61 69	6E+
+     31	      3A 24
+     32	0093  41 75 74 6F 72 75	6E+	 promptautorun db 'Autorun mode	initiated$'
+     33	      20 6D 6F 64 65 20	69+
+     34	      6E 69 74 69 61 74	65+
+     35	      64 24
+     36	00AA  49 6E 74 65 72 61	63+	 promptinteraction db 'Interaction mode	initiated$'
+     37	      74 69 6F 6E 20 6D	6F+
+     38	      64 65 20 69 6E 69	74+
+     39	      69 61 74 65 64 24
+     40	00C5			     DATA ENDS
+     41
+     42	0000			     CODE SEGMENT PARA PUBLIC 'CODE'
+     43				     ASSUME CS:CODE, DS:DATA
+     44	0000			     START PROC	FAR
+     45	0000  1E			 PUSH DS
+     46	0001  33 C0			 XOR AX, AX
+     47	0003  8E D8			 MOV DS, AX
+     48	0005  50			 PUSH AX
+     49	0006  B8 0000s			 MOV AX, DATA
+     50	0009  8E D8			 MOV DS, AX
+     51					 ; your	code starts here
+     52
+     53					 ; Display MODE
+     54	000B  BA 0052r			 MOV DX, OFFSET	MODE
+     55	000E  B4 09			 MOV AH, 09h ; Function	to display string
+     56	0010  CD 21			 INT 21h
+     57
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 2
+main.asm
+
+
+
+     58					 ;Print	endl
+     59	0012  B2 0D			 MOV DL, 13D
+     60	0014  B4 02			 MOV AH, 02h
+     61	0016  CD 21			 INT 21h
+     62
+     63	0018  B2 0A			 MOV DL, 10D
+     64	001A  B4 02			 MOV AH, 02h
+     65	001C  CD 21			 INT 21h
+     66
+     67					 ; Read	MODE
+     68	001E				 PICKMODE:
+     69
+     70	001E  B4 01			 MOV AH, 01h ; Function	to read	character with echo
+     71	0020  CD 21			 INT 21h
+     72	0022  3C 31			 CMP AL,'1'
+     73	0024  74 19			     JE	AUTORUNLBL
+     74	0026  3C 32			 CMP AL,'2'
+     75	0028  74 2E			     JE	INTERACTIONLBL
+     76
+     77					 ;Print	endl
+     78	002A  B2 0D			 MOV DL, 13D
+     79	002C  B4 02			 MOV AH, 02h
+     80	002E  CD 21			 INT 21h
+     81
+     82	0030  B2 0A			 MOV DL, 10D
+     83	0032  B4 02			 MOV AH, 02h
+     84	0034  CD 21			 INT 21h
+     85
+     86	0036  BA 007Cr			 MOV DX, OFFSET	ERRMODE
+     87	0039  B4 09			 MOV AH, 09h ; Function	to display string
+     88	003B  CD 21			 INT 21h
+     89	003D  EB DF			 JMP PICKMODE
+     90
+     91	003F				 AUTORUNLBL:
+     92
+     93					 ;Print	endl
+     94	003F  B2 0D			 MOV DL, 13D
+     95	0041  B4 02			 MOV AH, 02h
+     96	0043  CD 21			 INT 21h
+     97
+     98	0045  B2 0A			 MOV DL, 10D
+     99	0047  B4 02			 MOV AH, 02h
+    100	0049  CD 21			 INT 21h
+    101
+    102					 ; Display autorun initiated
+    103	004B  BA 0093r			 MOV DX, OFFSET	promptautorun
+    104	004E  B4 09			 MOV AH, 09h ; Function	to display string
+    105	0050  CD 21			 INT 21h
+    106
+    107	0052  9A 00000000sr		 CALL AUTORUN ;	initiate the autorun mode
+    108	0057  CB			 RET
+    109
+    110	0058				 INTERACTIONLBL:
+    111
+    112					 ;Print	endl
+    113	0058  B2 0D			 MOV DL, 13D
+    114	005A  B4 02			 MOV AH, 02h
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 3
+main.asm
+
+
+
+    115	005C  CD 21			 INT 21h
+    116
+    117	005E  B2 0A			 MOV DL, 10D
+    118	0060  B4 02			 MOV AH, 02h
+    119	0062  CD 21			 INT 21h
+    120
+    121					 ; Display interaction initiated
+    122	0064  BA 00AAr			 MOV DX, OFFSET	promptinteraction
+    123	0067  B4 09			 MOV AH, 09h ; Function	to display string
+    124	0069  CD 21			 INT 21h
+    125
+    126					 ;Print	endl
+    127	006B  B2 0D			 MOV DL, 13D
+    128	006D  B4 02			 MOV AH, 02h
+    129	006F  CD 21			 INT 21h
+    130
+    131	0071  B2 0A			 MOV DL, 10D
+    132	0073  B4 02			 MOV AH, 02h
+    133	0075  CD 21			 INT 21h
+    134
+    135	0077  9A 00000000sr		 CALL Interaction ; initiate the interaction mode
+    136					 ; your	code ends here
+    137	007C  CB		     RET
+    138	007D			     START ENDP
+    139	007D			     CODE ENDS
+    140
+    141	0000			     CODE9 SEGMENT PARA	PUBLIC 'CODE'
+    142				     ASSUME CS:CODE9
+    143	0000			     AUTORUN PROC FAR ;	FUNCTION TO MAKE A NR WITH THE DIGITS IN THE VECTOR
+    144					 ; Create the file
+    145	0000  BA 000Ar			 MOV DX, OFFSET	filename
+    146	0003  B9 0000			 MOV CX, 0 ;0 for normal file
+    147	0006  B4 3C			 MOV AH, 3Ch ; Create file function
+    148	0008  CD 21			 INT 21h ; DOS interrupt
+    149	000A  A3 0013r			 MOV [fileHandle], AX ;	Save file handle
+    150
+    151					 ; Main	body (increment	the nr get the nr of iterations	and write them in the file and	    +
+    152				     repeat)
+    153	000D				 ITERMAIN:
+    154	000D  A1 0000r			 MOV AX,NUMAR
+    155	0010  9A 00000000sr		 CALL Kaprekar ;call kaprekar to get the nr of iterations
+    156	0015  9A 00000000sr		 CALL WRITE  ;call write to write the number and the nr	of iteration in	the file date.txt
+    157	001A  81 3E 0000r 270F		 CMP NUMAR,9999D ;check	if we reached the last number
+    158	0020  74 0C			 JE ENDF7
+    159	0022  83 06 0000r 01		 ADD NUMAR,1D	;if not	increment nr and reset counter
+    160	0027  C6 06 0006r 00		 MOV COUNTER,00H
+    161	002C  EB DF			 JMP ITERMAIN
+    162	002E				 ENDF7:
+    163
+    164					 ; Close the file
+    165	002E  8B 1E 0013r		 MOV BX, [fileHandle] ;	File handle
+    166	0032  B4 3E			 MOV AH, 3Eh ; Close file function
+    167	0034  CD 21			 INT 21h ; DOS interrupt
+    168	0036  CB		     RET
+    169	0037			     AUTORUN ENDP
+    170
+    171	0037			     CODE9 ENDS
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 4
+main.asm
+
+
+
+    172
+    173	0000			     CODE10 SEGMENT PARA PUBLIC	'CODE'
+    174				     ASSUME CS:CODE10
+    175	0000			     INTERACTION PROC FAR
+    176				     ; Display prompt
+    177	0000  BA 0015r			 MOV DX, OFFSET	promptb
+    178	0003  B4 09			 MOV AH, 09h ; Function	to display string
+    179	0005  CD 21			 INT 21h
+    180
+    181					 ; Read	character
+    182	0007  BE 0000			 MOV SI, 0D
+    183	000A  C6 06 0051r 00		 MOV FLAG,00H
+    184	000F				 getnr:
+    185	000F  B4 01			 MOV AH, 01h ; Function	to read	character with echo
+    186	0011  CD 21			 INT 21h
+    187	0013  3C 30			 CMP AL,'0'
+    188	0015  72 14			     JB	FLAG1
+    189	0017  3C 39			 CMP AL,'9'
+    190	0019  77 10			     JA	FLAG1
+    191	001B  2C 30			 SUB AL,'0' ; Convert character	to number
+    192	001D  88 84 0002r		 MOV DIGITS[SI], AL
+    193	0021  83 C6 01			 ADD SI,1D
+    194	0024  83 FE 04			 CMP SI,4D
+    195	0027  74 11			 JE ENDF8
+    196	0029  EB E4			 JMP getnr
+    197	002B				 FLAG1:
+    198	002B  C6 06 0051r 01		 MOV FLAG,01H
+    199	0030  83 C6 01			 ADD SI,1D
+    200	0033  83 FE 04			 CMP SI,4D
+    201	0036  74 02			 JE ENDF8
+    202	0038  EB D5			 JMP getnr
+    203	003A				 ENDF8:
+    204	003A  80 3E 0051r 01		 CMP FLAG,01H
+    205	003F  74 02			     JE	ERROR ;if its not a number print error message and reask for input
+    206	0041  EB 1D			 JMP FINE ;if its fine go next
+    207	0043				 ERROR:
+    208
+    209					 ;Print	endl
+    210	0043  B2 0D			 MOV DL, 13D
+    211	0045  B4 02			 MOV AH, 02h
+    212	0047  CD 21			 INT 21h
+    213
+    214	0049  B2 0A			 MOV DL, 10D
+    215	004B  B4 02			 MOV AH, 02h
+    216	004D  CD 21			 INT 21h
+    217
+    218					 ;print	error message
+    219	004F  BA 0031r			 MOV DX, OFFSET	error_message
+    220	0052  B4 09			 MOV AH, 09h
+    221	0054  CD 21			 INT 21h
+    222	0056  C6 06 0051r 00		 MOV FLAG,00H
+    223	005B  BE 0000			 MOV SI,0D
+    224	005E  EB AF			 JMP GETNR
+    225
+    226	0060				 FINE:
+    227
+    228					 ;Print	endl
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 5
+main.asm
+
+
+
+    229	0060  B2 0D			 MOV DL, 13D
+    230	0062  B4 02			 MOV AH, 02h
+    231	0064  CD 21			 INT 21h
+    232
+    233	0066  B2 0A			 MOV DL, 10D
+    234	0068  B4 02			 MOV AH, 02h
+    235	006A  CD 21			 INT 21h
+    236
+    237	006C  9A 00000000sr		 CALL MAKENR ;make the nr from the saved digits
+    238	0071  A3 0000r			 MOV NUMAR,AX
+    239	0074  9A 00000000sr		 CALL Kaprekar_INT   ;use algorithm to get the nr of iterations
+    240
+    241					 ; Display prompt end
+    242	0079  BA 0024r			 MOV DX, OFFSET	prompte
+    243	007C  B4 09			 MOV AH, 09h
+    244	007E  CD 21			 INT 21h
+    245
+    246	0080  80 06 0006r 30		 ADD COUNTER,'0'
+    247					 ; nr of iterations
+    248	0085  8A 16 0006r		 MOV DL, COUNTER
+    249	0089  B4 02			 MOV AH, 02h
+    250	008B  CD 21			 INT 21h
+    251
+    252	008D  CB		     RET
+    253	008E			     INTERACTION ENDP
+    254	008E			     CODE10 ENDS
+    255
+    256	0000			     CODE7 SEGMENT PARA	PUBLIC 'CODE'
+    257				     ASSUME CS:CODE7
+    258	0000			     WRITE PROC	FAR ; FUNCTION TO MAKE A NR WITH THE DIGITS IN THE VECTOR
+    259	0000  A1 0000r			 MOV AX,NUMAR
+    260	0003  9A 00000000sr		 CALL MAKEDIGITS ;WE NEED TO ADD THE CHARACTER 0 TO EACH DIGIT TO MAKE IT A CHAR
+    261					 ;WE NEED TO CORRECT THE ORDER IN WHICH	THE DIGITS ARE SAVED(REVEERSE IT)
+    262	0008  8A 1E 0005r		 MOV BL,DIGITS[3]
+    263	000C  8A 3E 0002r		 MOV BH,DIGITS[0]
+    264	0010  88 3E 0005r		 MOV digits[3],BH
+    265	0014  88 1E 0002r		 mov digits[0],BL
+    266	0018  8A 1E 0004r		 MOV BL,DIGITS[2]
+    267	001C  8A 3E 0003r		 MOV BH,DIGITS[1]
+    268	0020  88 3E 0004r		 mov digits[2],BH
+    269	0024  88 1E 0003r		 mov digits[1],BL
+    270	0028  BE 0000			 MOV SI,0000H
+    271	002B				 TOCHAR:     ;we add the character 0 to	each digit to make it a	char
+    272	002B  80 84 0002r 30		     ADD DIGITS[SI],'0'
+    273	0030  83 C6 01			     ADD SI,1D
+    274	0033  83 FE 04			     CMP SI,4D
+    275	0036  74 02			 JE ENDF6
+    276	0038  EB F1			 JMP TOCHAR
+    277	003A				 ENDF6:
+    278					 ; Write the number
+    279	003A  BA 0002r			 MOV DX, OFFSET	DIGITS ;what to	write
+    280	003D  B9 0004			 MOV CX, 4D ;how many bytes to write
+    281	0040  8B 1E 0013r		 MOV BX, [fileHandle] ;where to	write
+    282	0044  B4 40			 MOV AH, 40h ; Write to	file function
+    283	0046  CD 21			 INT 21h ; DOS interrupt
+    284
+    285					 ; Write the space between the number and the number of	iterations
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 6
+main.asm
+
+
+
+    286	0048  BA 0007r			 MOV DX, OFFSET	SPACE
+    287	004B  B9 0001			 MOV CX, 1D
+    288	004E  8B 1E 0013r		 MOV BX, [fileHandle]
+    289	0052  B4 40			 MOV AH, 40h
+    290	0054  CD 21			 INT 21h
+    291
+    292					 ; Write the number of iterations
+    293	0056  80 06 0006r 30		 ADD COUNTER,'0'
+    294	005B  BA 0006r			 MOV DX, OFFSET	COUNTER
+    295	005E  B9 0001			 MOV CX, 1D
+    296	0061  8B 1E 0013r		 MOV BX, [fileHandle]
+    297	0065  B4 40			 MOV AH, 40h
+    298	0067  CD 21			 INT 21h
+    299
+    300					 ; Write enf of	line
+    301	0069  BA 0008r			 MOV DX, OFFSET	ENDL
+    302	006C  B9 0002			 MOV CX, 2D
+    303	006F  8B 1E 0013r		 MOV BX, [fileHandle]
+    304	0073  B4 40			 MOV AH, 40h
+    305	0075  CD 21			 INT 21h
+    306	0077  CB		     RET
+    307	0078			     WRITE ENDP
+    308
+    309	0078			     CODE7 ENDS
+    310
+    311	0000			     CODE3 SEGMENT PARA	PUBLIC 'CODE'
+    312				     ASSUME CS:CODE3
+    313	0000			     Kaprekar PROC FAR ; FUNCTION TO MAKE A NR WITH THE	DIGITS IN THE VECTOR
+    314	0000				 ITER:
+    315	0000  80 06 0006r 01		 ADD COUNTER,1D	 ; we start the	counter
+    316	0005  9A 00000000sr		 CALL SORTDIGITS ; we sort the digits of the number
+    317	000A  9A 00000000sr		 CALL MAKENR ; we make a number	with the digits
+    318	000F  9A 00000000sr		 CALL Inverse ;	we make	the inverse of the number
+    319	0014  2B C2			 SUB AX,DX ; we	substract the number with the inverse
+    320	0016  3D 0000			 CMP AX,0000H ;we check	if the number is either	0000 or	6174
+    321	0019  74 07			 JE ENDF5
+    322	001B  3D 181E			 CMP AX,6174D
+    323	001E  74 02			 JE ENDF5
+    324	0020  EB DE			 JMP ITER
+    325	0022				 ENDF5:
+    326	0022  CB		     RET
+    327	0023			     Kaprekar ENDP
+    328
+    329	0023			     CODE3 ENDS
+    330
+    331	0000			     CODE11 SEGMENT PARA PUBLIC	'CODE'
+    332				     ASSUME CS:CODE11
+    333	0000			     Kaprekar_INT PROC FAR ; FUNCTION TO MAKE A	NR WITH	THE DIGITS IN THE VECTOR
+    334	0000				 ITER1:
+    335	0000  80 06 0006r 01		 ADD COUNTER,1D	 ; we start the	counter
+    336	0005  9A 00000000sr		 CALL SORTDIGITS ; we sort the digits of the number
+    337	000A  9A 00000000sr		 CALL MAKENR ; we make a number	with the digits
+    338	000F  8B D8			 MOV BX,AX
+    339					 ; print the nr
+    340	0011  33 F6			 XOR SI,SI
+    341	0013				 getnr3:
+    342	0013  80 84 0002r 30		 ADD DIGITS[SI],'0'
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 7
+main.asm
+
+
+
+    343	0018  8A 94 0002r		 MOV DL, DIGITS[SI]
+    344	001C  B4 02			 MOV AH, 02h
+    345	001E  CD 21			 INT 21h
+    346	0020  83 C6 01			 ADD SI,1D   ; inc adress
+    347	0023  83 FE 04			 CMP SI,4D
+    348	0026  74 02			 JE ENDF10
+    349	0028  EB E9			 JMP getnr3
+    350	002A				 ENDF10:
+    351
+    352					 ;print	the dividing_string
+    353	002A  BA 0049r			 MOV DX, OFFSET	dividing_string
+    354	002D  B4 09			 MOV AH, 09h
+    355	002F  CD 21			 INT 21h
+    356
+    357	0031  BE 0004			 MOV SI,4D
+    358					 ;print	the inverse
+    359	0034				 getnr4:
+    360	0034  83 EE 01			 SUB SI,1D
+    361	0037  8A 94 0002r		 MOV DL, DIGITS[SI]
+    362	003B  B4 02			 MOV AH, 02h
+    363	003D  CD 21			 INT 21h
+    364	003F  83 FE 00			 CMP SI,0D
+    365	0042  74 02			 JE ENDF9
+    366	0044  EB EE			 JMP getnr4
+    367	0046				 ENDF9:
+    368
+    369					 ;print	the dividing_string2
+    370	0046  BA 004Dr			 MOV DX, OFFSET	dividing_string2
+    371	0049  B4 09			 MOV AH, 09h
+    372	004B  CD 21			 INT 21h
+    373
+    374	004D  8B C3			 MOV AX,BX
+    375
+    376	004F  9A 00000000sr		 CALL Inverse ;	we make	the inverse of the number
+    377	0054  2B C2			 SUB AX,DX ; we	substract the number with the inverse
+    378	0056  8B C8			 MOV CX,AX
+    379
+    380	0058  9A 00000000sr		 CALL MAKEDIGITS
+    381
+    382					 ;print	the result
+    383	005D  BE 0004			 MOV SI,4D
+    384	0060				 getnr5:
+    385	0060  83 EE 01			 SUB SI,1D
+    386	0063  80 84 0002r 30		 ADD DIGITS[SI],'0'
+    387	0068  8A 94 0002r		 MOV DL, DIGITS[SI]
+    388	006C  B4 02			 MOV AH, 02h
+    389	006E  CD 21			 INT 21h
+    390	0070  83 FE 00			 CMP SI,0D
+    391	0073  74 02			 JE ENDF11
+    392	0075  EB E9			 JMP getnr5
+    393	0077				 ENDF11:
+    394
+    395					 ;print	endl
+    396	0077  B2 0D			 MOV DL, 13D
+    397	0079  B4 02			 MOV AH, 02h
+    398	007B  CD 21			 INT 21h
+    399
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 8
+main.asm
+
+
+
+    400	007D  B2 0A			 MOV DL, 10D
+    401	007F  B4 02			 MOV AH, 02h
+    402	0081  CD 21			 INT 21h
+    403
+    404	0083  8B C1			 MOV AX,CX
+    405
+    406	0085  3D 0000			 CMP AX,0000H ;we check	if the number is either	0000 or	6174
+    407	0088  74 08			 JE ENDF51
+    408	008A  3D 181E			 CMP AX,6174D
+    409	008D  74 03			 JE ENDF51
+    410	008F  E9 FF6E			 JMP ITER1
+    411	0092				 ENDF51:
+    412	0092  CB		     RET
+    413	0093			     Kaprekar_INT ENDP
+    414
+    415	0093			     CODE11 ENDS
+    416
+    417	0000			     CODE6 SEGMENT PARA	PUBLIC 'CODE'
+    418				     ASSUME CS:CODE6
+    419	0000			     MAKENR PROC FAR ; FUNCTION	TO MAKE	A NR WITH THE DIGITS IN	THE VECTOR
+    420	0000  BE 0000			 MOV SI,0
+    421	0003  33 C0			 XOR AX,AX
+    422	0005				 MKNR:
+    423	0005  33 DB			 XOR BX,BX
+    424	0007  8A 9C 0002r		 MOV BL,DIGITS[SI]
+    425	000B  03 C3			 ADD AX,BX ; add the new digit to the number
+    426	000D  83 C6 01			 ADD SI,1D
+    427	0010  83 FE 04			 CMP SI,4D
+    428	0013  74 0E			 JE ENDF4
+    429	0015  8B C8			 MOV CX,AX
+    430	0017  D1 E0 D1 E0 D1 E0		 SHL AX,3 ;multiply by 10 to make space	for the	new digit
+    431	001D  03 C1			 ADD AX,CX
+    432	001F  03 C1			 ADD AX,CX
+    433	0021  EB E2			 JMP MKNR
+    434	0023				 ENDF4:
+    435	0023  CB		     RET
+    436	0024			     MAKENR ENDP
+    437
+    438	0024			     CODE6 ENDS
+    439
+    440	0000			     CODE8 SEGMENT PARA	PUBLIC 'CODE'
+    441				     ASSUME CS:CODE8
+    442	0000			     MAKEDIGITS	PROC FAR ; FUNCTION TO MAKE A NR WITH THE DIGITS IN THE	VECTOR
+    443					 ;WE ASSUME THAT THE GIVEN NR IS IN AX AND WE PUT THE DIGITS IN	THE DIGITS VECTOR IN ORDER  +
+    444				     TO	SORT THEM
+    445	0000  BE 0000			 MOV SI,0000H ;WE USE SI AS AN INDEX
+    446	0003				 GET:
+    447	0003  9A 00000000sr		 CALL DIV10
+    448	0008  88 84 0002r		 MOV DIGITS[SI],AL
+    449	000C  83 C6 01			 ADD SI,1D
+    450	000F  8B C3			 MOV AX,BX
+    451	0011  83 FE 04			 CMP SI,4D
+    452	0014  74 02			 JE ENDF2
+    453	0016  EB EB			 JMP GET
+    454	0018				 ENDF2:	; THE DIGITS ARE SAVED IN THE VECTOR
+    455	0018  CB		     RET
+    456	0019			     MAKEDIGITS	ENDP
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 9
+main.asm
+
+
+
+    457
+    458	0019			     CODE8 ENDS
+    459
+    460	0000			     CODE5 SEGMENT PARA	PUBLIC 'CODE'
+    461				     ASSUME CS:CODE5
+    462	0000			     SORTDIGITS	PROC FAR
+    463	0000  9A 00000000sr		 CALL MAKEDIGITS ; NOW WE NEED TO SORT THE VECTOR
+    464	0005				 SORTR:	; SORT + RESET
+    465	0005  BE 0000			 MOV SI, 0000H ; WE RESET THE COUNTER
+    466	0008  33 C9			 XOR CX,CX ; WE	PREPARE	ANOTHER	COUNTER	IN ORDER TO CHECK IF ALL THE NR	ARE IN ORDER
+    467	000A				 SORTN:	;NORMAL	SORT
+    468	000A  8A 84 0002r		 MOV AL,DIGITS[SI]
+    469	000E  8A 9C 0003r		 MOV BL,DIGITS[SI+1]
+    470	0012  3A C3			 CMP AL,BL
+    471	0014  73 0A			 JAE SKIP    ;WE SWAP THE DIGITS IF THEY ARE IN	THE WRONG ORDER
+    472	0016  88 9C 0002r		 MOV DIGITS[SI],BL
+    473	001A  88 84 0003r		 MOV DIGITS[SI+1],AL
+    474	001E  EB 03			 JMP SKIPCX
+    475	0020				 SKIP:
+    476	0020  83 C1 01			 ADD CX,1D
+    477	0023				 SKIPCX:
+    478	0023  83 C6 01			 ADD SI,1D
+    479	0026  83 F9 03			 CMP CX,3    ; WE CHECK	IF ALL THE DIGITS ARE IN ORDER AND IF THEY ARE WE EXIT
+    480	0029  74 07			 JE ENDF3
+    481	002B  83 FE 03			 CMP SI,3D   ; WE CHECK	IF WE VERIFIED ALL THE NR IN THE VECTOR
+    482	002E  74 D5			 JE SORTR
+    483	0030  EB D8			 JMP SORTN
+    484	0032				 ENDF3:
+    485	0032  CB		     RET
+    486	0033			     SORTDIGITS	ENDP
+    487
+    488	0033			     CODE5 ENDS
+    489
+    490	0000			     CODE2 SEGMENT PARA	PUBLIC 'CODE'
+    491				     ASSUME CS:CODE2
+    492	0000			     Inverse PROC FAR
+    493	0000  33 D2		     XOR DX,DX
+    494	0002  33 DB		     XOR BX,BX ;PREPARE	THE REGISTER FOR THE FUNCTION AND SAVE THE VALUE OF AX
+    495	0004  50		     PUSH AX
+    496	0005			     MAKEREV:
+    497	0005  9A 00000000sr	     CALL DIV10	 ; WE NEED TO DIVIDE BY	10 IN ORDER TO GET THE ZECIMAL
+    498	000A  03 D0		     ADD DX,AX
+    499	000C  8B CA		     MOV CX,DX
+    500	000E  8B C3		     MOV AX,BX
+    501	0010  3D 0000		     CMP AX,0	 ; WE CHECK IF WE ADDED	THE LAST DECIMAL
+    502	0013  74 0C		     JE	ENDF
+    503	0015  D1 E2 D1 E2 D1 E2	     SHL DX,3	 ; WE MULTIBLY BY 10 BY	SHIFTIN	3 TIMES	( *8 ) AND ADDING 2 * DX
+    504	001B  03 D1		     ADD DX,CX
+    505	001D  03 D1		     ADD DX,CX
+    506	001F  EB E4		     JMP MAKEREV
+    507	0021			     ENDF:
+    508	0021  58		     POP AX  ; WE GET THE VALUE	OF AX BACK FROM	THE STACK
+    509	0022  CB		     RET
+    510	0023			     Inverse ENDP
+    511
+    512	0023			     CODE2 ENDS
+    513
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 10
+main.asm
+
+
+
+    514	0000			     CODE4 SEGMENT PARA	PUBLIC 'CODE'
+    515				     ASSUME CS:CODE4
+    516	0000			     DIV10 PROC	FAR
+    517	0000  BB 0000			 MOV BX,0000H; THIS FUNCTION DIVIDES BY	10 WHERE AX IS AX MOD 10 AND BX	IS AX/10
+    518	0003				 REPEAT:
+    519	0003  3D 000A			 CMP AX,10D
+    520	0006  72 22			 JB ENDF1
+    521	0008  3D 03E8			 CMP AX,1000D ;	I ADDED	THE THIS SUBTRACTION FOR FASTER	EXECUTION
+    522	000B  72 08			 JB SUBMIE
+    523	000D  2D 03E8			 SUB AX,1000D
+    524	0010  83 C3 64			 ADD BX,100D
+    525	0013  EB EE			 JMP REPEAT
+    526	0015				 SUBMIE:
+    527	0015  3D 0064			 CMP AX,100D
+    528	0018  72 08			 JB SUBSUTA
+    529	001A  2D 0064			 SUB AX,100D
+    530	001D  83 C3 0A			 ADD BX,10D
+    531	0020  EB E1			 JMP REPEAT
+    532	0022				 SUBSUTA:
+    533	0022  2D 000A			 SUB AX,10D
+    534	0025  83 C3 01			 ADD BX,1D
+    535	0028  EB D9			 JMP REPEAT
+    536	002A				 ENDF1:
+    537	002A  CB		     RET
+    538	002B			     DIV10 ENDP
+    539
+    540	002B			     CODE4 ENDS
+    541				     END START
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 11
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??DATE				  Text	 "05/17/24"
+??FILENAME			  Text	 "main	  "
+??TIME				  Text	 "11:52:35"
+??VERSION			  Number 040A
+@CPU				  Text	 0101H
+@CURSEG				  Text	 CODE4
+@FILENAME			  Text	 MAIN
+@WORDSIZE			  Text	 2
+AUTORUN				  Far	 CODE9:0000
+AUTORUNLBL			  Near	 CODE:003F
+COUNTER				  Byte	 DATA:0006
+DIGITS				  Byte	 DATA:0002
+DIV10				  Far	 CODE4:0000
+DIVIDING_STRING			  Byte	 DATA:0049
+DIVIDING_STRING2		  Byte	 DATA:004D
+ENDF				  Near	 CODE2:0021
+ENDF1				  Near	 CODE4:002A
+ENDF10				  Near	 CODE11:002A
+ENDF11				  Near	 CODE11:0077
+ENDF2				  Near	 CODE8:0018
+ENDF3				  Near	 CODE5:0032
+ENDF4				  Near	 CODE6:0023
+ENDF5				  Near	 CODE3:0022
+ENDF51				  Near	 CODE11:0092
+ENDF6				  Near	 CODE7:003A
+ENDF7				  Near	 CODE9:002E
+ENDF8				  Near	 CODE10:003A
+ENDF9				  Near	 CODE11:0046
+ENDL				  Byte	 DATA:0008
+ERRMODE				  Byte	 DATA:007C
+ERROR				  Near	 CODE10:0043
+ERROR_MESSAGE			  Byte	 DATA:0031
+FILEHANDLE			  Word	 DATA:0013
+FILENAME			  Byte	 DATA:000A
+FINE				  Near	 CODE10:0060
+FLAG				  Byte	 DATA:0051
+FLAG1				  Near	 CODE10:002B
+GET				  Near	 CODE8:0003
+GETNR				  Near	 CODE10:000F
+GETNR3				  Near	 CODE11:0013
+GETNR4				  Near	 CODE11:0034
+GETNR5				  Near	 CODE11:0060
+INTERACTION			  Far	 CODE10:0000
+INTERACTIONLBL			  Near	 CODE:0058
+INVERSE				  Far	 CODE2:0000
+ITER				  Near	 CODE3:0000
+ITER1				  Near	 CODE11:0000
+ITERMAIN			  Near	 CODE9:000D
+KAPREKAR			  Far	 CODE3:0000
+KAPREKAR_INT			  Far	 CODE11:0000
+MAKEDIGITS			  Far	 CODE8:0000
+MAKENR				  Far	 CODE6:0000
+MAKEREV				  Near	 CODE2:0005
+MKNR				  Near	 CODE6:0005
+Turbo Assembler	 Version 4.1	    05/17/24 11:52:35	    Page 12
+Symbol Table
+
+
+
+MODE				  Byte	 DATA:0052
+NUMAR				  Word	 DATA:0000
+PICKMODE			  Near	 CODE:001E
+PROMPTAUTORUN			  Byte	 DATA:0093
+PROMPTB				  Byte	 DATA:0015
+PROMPTE				  Byte	 DATA:0024
+PROMPTINTERACTION		  Byte	 DATA:00AA
+REPEAT				  Near	 CODE4:0003
+SKIP				  Near	 CODE5:0020
+SKIPCX				  Near	 CODE5:0023
+SORTDIGITS			  Far	 CODE5:0000
+SORTN				  Near	 CODE5:000A
+SORTR				  Near	 CODE5:0005
+SPACE				  Byte	 DATA:0007
+START				  Far	 CODE:0000
+SUBMIE				  Near	 CODE4:0015
+SUBSUTA				  Near	 CODE4:0022
+TOCHAR				  Near	 CODE7:002B
+WRITE				  Far	 CODE7:0000
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+CODE				  16  007D Para	  Public  CODE
+CODE10				  16  008E Para	  Public  CODE
+CODE11				  16  0093 Para	  Public  CODE
+CODE2				  16  0023 Para	  Public  CODE
+CODE3				  16  0023 Para	  Public  CODE
+CODE4				  16  002B Para	  Public  CODE
+CODE5				  16  0033 Para	  Public  CODE
+CODE6				  16  0024 Para	  Public  CODE
+CODE7				  16  0078 Para	  Public  CODE
+CODE8				  16  0019 Para	  Public  CODE
+CODE9				  16  0037 Para	  Public  CODE
+DATA				  16  00C5 Para	  Public  DATA
+
