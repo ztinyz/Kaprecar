@@ -13,7 +13,7 @@ This can be useful for:
 - experimenting with input handling, loops, conditionals and integer arithmetic at the assembly level.
 
 ## Repository Contents (at a glance)
-Kaprecar/
+Kaprecar\
 ├── main.asm # Main assembly source file\
 ├── test.asm # Sample / test inputs or example usage\
 ├── *.obj / *.lst # Assembler output / listing / object files (after build)\
