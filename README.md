@@ -28,16 +28,16 @@ Kaprecar\
 
 ## Building & Running
 
-Example (assuming use of TASM assembler):
-assembler main.asm          # assemble to object file
-link main.obj               # link to produce executable (or use appropriate commands)
+Example (assuming use of TASM assembler):\
+assembler main.asm          # assemble to object file\
+link main.obj               # link to produce executable (or use appropriate commands)\
 
-Then run:
+Then run:\
 ./main.exe                  # or, in DOS / emulator environment
 
 ##Usage
 
-Provide an integer (input) to the program (e.g. via command-line prompt or by modifying source / input handling).
-The program will compute how many iterations are needed to reach the “Kaprecar constant”.
-The result (number of steps) will be output accordingly.
+Provide an integer (input) to the program (e.g. via command-line prompt or by modifying source / input handling).\
+The program will compute how many iterations are needed to reach the “Kaprecar constant”.\
+The result (number of steps) will be output accordingly.\
 Note: Because this is a 16-bit program, ensure your environment supports 16-bit execution (DOS, emulator, or compatible setup).
