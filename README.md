@@ -14,11 +14,11 @@ This can be useful for:
 
 ## Repository Contents (at a glance)
 Kaprecar/
-├── main.asm # Main assembly source file
-├── test.asm # Sample / test inputs or example usage
-├── *.obj / *.lst # Assembler output / listing / object files (after build)
-├── *.exe / *.map # Compiled binaries / map files (after linking)
-└── (other build-related files)
+├── main.asm # Main assembly source file\
+├── test.asm # Sample / test inputs or example usage\
+├── *.obj / *.lst # Assembler output / listing / object files (after build)\
+├── *.exe / *.map # Compiled binaries / map files (after linking)\
+└── (other build-related files)\
 
 ## Requirements / Tools
 
